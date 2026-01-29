@@ -17,36 +17,30 @@ type Employee struct {
 
 type Department struct {
 	name string
-	emps []Employee
+	emps []*Employee
 }
 
 func (d Department) calcAvgSal() {
-	var count int
-	var totalSal float32
 
-	count = 0
+	if len(d.emps) == 0 {
+		fmt.Printf("there are no employees in department %s\n", d.name)
+		return
+	}
+	var totalSal float32
 	totalSal = 0
 
 	arr := d.emps
-	for _, u := range arr { //here i want to take and add the salary value from the employee list of the department
+	for _, emp := range arr { //here i want to take and add the salary value from the employee list of the department
 		//*edit* - done!
-		totalSal += u.salary
-		count++
+		totalSal += emp.salary
 	}
-	totalAvgSal := totalSal / float32(count)
-	fmt.Printf("total employees in department %s are %d and average salary of employees of department %s is %v\n", d.name, count, d.name, totalAvgSal)
+	totalAvgSal := totalSal / float32(len(d.emps))
+	fmt.Printf("total employees in department %s are %d and average salary of employees of department %s is %v\n", d.name, len(d.emps), d.name, totalAvgSal)
 
 	fmt.Println("")
 }
 
-func (d *Department) addEmpToDept(newEmp Employee) {
-	// var newEmp Employee
-
-	// fmt.Println("this method adds an employee to a department")
-
-	// fmt.Println("enter employee details to be added: ")
-	// fmt.Scan(&newEmp)
-	// fmt.Scanf("na/me: %s, age: %d, salary: %v", newEmp.name, newEmp.age, newEmp.salary)
+func (d *Department) addEmpToDept(newEmp *Employee) {
 
 	d.emps = append(d.emps, newEmp)
 
@@ -56,24 +50,14 @@ func (d *Department) addEmpToDept(newEmp Employee) {
 	fmt.Println("")
 }
 
-func (d *Department) remEmpFromDept() {
-	fmt.Println("removing employee from..", d.name)
-	fmt.Printf("%+v\n", d.emps)
-	d.emps = d.emps[:len(d.emps)-1]
-	fmt.Println("removed employee from..", d.name, "successfully!")
-	fmt.Printf("%+v\n", d.emps)
-	fmt.Println("")
-
-}
-
-func (e Employee) raiseEmpSal() {
+func (e *Employee) raiseEmpSal() {
 	var raiseAmt float32
 	fmt.Printf("enter amount to be raised in %s's salary: ", e.name)
 	fmt.Scan(&raiseAmt)
 
 	e.salary += raiseAmt
 	fmt.Printf("\nupdated salary of %s is %.2f\n", e.name, e.salary)
-	fmt.Println("")
+	// fmt.Println("")
 }
 
 func main() {
@@ -110,20 +94,20 @@ func main() {
 
 	java := Department{
 		name: "java development",
-		emps: []Employee{},
+		emps: []*Employee{},
 	}
 
 	goLang := Department{
 		name: "go development",
-		emps: []Employee{},
+		emps: []*Employee{},
 	}
 
-	java.addEmpToDept(suresh)
-	java.addEmpToDept(ramesh)
-	java.addEmpToDept(john)
+	java.addEmpToDept(&suresh)
+	java.addEmpToDept(&ramesh)
+	java.addEmpToDept(&john)
 
-	goLang.addEmpToDept(nakul)
-	goLang.addEmpToDept(paul)
+	goLang.addEmpToDept(&nakul)
+	goLang.addEmpToDept(&paul)
 
 	java.calcAvgSal()
 	goLang.calcAvgSal()
@@ -133,4 +117,19 @@ func main() {
 
 	nakul.raiseEmpSal()
 	goLang.calcAvgSal()
+}
+
+func (d *Department) remEmpFromDept() {
+	var empName string
+	fmt.Printf("enter the employee's name to who is to be removed from department %s: ", d.name)
+	fmt.Scan(&empName)
+
+	for i, emp := range d.emps {
+		if emp.name == empName {
+			d.emps = append(d.emps[:i], d.emps[i+1:]...)
+			fmt.Printf("removed %s from department %s\n\n", empName, d.name)
+			return
+		}
+	}
+	fmt.Printf("no user with the name %s in departent %s!\n\n", empName, d.name)
 }
