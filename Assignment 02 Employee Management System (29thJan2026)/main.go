@@ -46,7 +46,12 @@ func (d *Department) addEmpToDept(newEmp *Employee) {
 
 	fmt.Println("\ndepartment: ", d.name)
 	fmt.Println("added employee successfully!")
-	fmt.Printf("%+v\n", d.emps)
+	fmt.Printf("updates employee list of %s department: \n", d.name)
+	for _, emp := range d.emps {
+		fmt.Printf("%+v\n", *emp)
+	}
+	fmt.Printf("%+v\n", *newEmp)
+
 	fmt.Println("")
 }
 
@@ -120,8 +125,10 @@ func main() {
 }
 
 func (d *Department) remEmpFromDept() {
+	fmt.Printf("removing employee from..%s department\n", d.name)
+
 	var empName string
-	fmt.Printf("enter the employee's name to who is to be removed from department %s: ", d.name)
+	fmt.Printf("enter the employee's name who is to be removed from department %s: ", d.name)
 	fmt.Scan(&empName)
 
 	for i, emp := range d.emps {
