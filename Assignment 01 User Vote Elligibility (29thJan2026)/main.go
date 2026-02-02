@@ -1,10 +1,10 @@
-// Task 1 :- create the Person class using a struct in Go to represent individuals with attributes like name, age,
+// Task 1 :- create the Person class using a struct in Go to represent individuals with attributes like Name, age,
 // and methods to introduce themselves, update their age, and check if they are eligible to vote.
 
 //to do:
 
-//create a struct named Person
-//give fields - name, age
+//create a struct Named Person
+//give fields - Name, age
 //create reciever methods for - intro, update age on bday, and for checking vote elligibility
 
 // DEDLINE: eod 29th jan 2026
@@ -13,47 +13,47 @@ package main
 import "fmt"
 
 type Person struct {
-	name string
+	Name string
 	age  int
 }
 
 func (p Person) userIntro() {
-	fmt.Printf("user's name is %s and %s is %d years old!\n", p.name, p.name, p.age)
+	fmt.Printf("user's Name is %s and %s is %d years old!\n", p.Name, p.Name, p.age)
 }
 
 func (p *Person) updateUserAge() {
 	var newAge int
-	fmt.Printf("age of %s is %d years\n", p.name, p.age)
+	fmt.Printf("age of %s is %d years\n", p.Name, p.age)
 	fmt.Print("enter new age to be updated: ")
 	fmt.Scan(&newAge)
 	p.age = newAge
-	fmt.Printf("updated age of %s is %d", p.name, p.age)
+	fmt.Printf("updated age of %s is %d", p.Name, p.age)
 }
 
 func (p Person) checkVoteEligi() {
 	var choice int
 	if p.age <= 18 {
-		fmt.Printf("age of the user named %s is %d, since they're below 18, they cant vote\n", p.name, p.age)
-		fmt.Printf("do you want to update %s's age? (0 for YES, 1 for NO)", p.name)
+		fmt.Printf("age of the user Named %s is %d, since they're below 18, they cant vote\n", p.Name, p.age)
+		fmt.Printf("do you want to update %s's age? (0 for YES, 1 for NO)", p.Name)
 		fmt.Scan(&choice)
 		switch choice {
 		case 0:
 			p.updateUserAge()
 		case 1:
-			fmt.Printf("not updating %s's age\n", p.name)
+			fmt.Printf("not updating %s's age\n", p.Name)
 		default:
 			fmt.Println("please enter valid choice!")
 		}
 
 	} else {
-		fmt.Printf("age of %s is %d, they can vote!\n", p.name, p.age)
+		fmt.Printf("age of %s is %d, they can vote!\n", p.Name, p.age)
 	}
 }
 
 func main() {
 
 	p := Person{
-		name: "nakul",
+		Name: "nakul",
 		age:  3,
 	}
 
