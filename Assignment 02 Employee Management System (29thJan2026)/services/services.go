@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -13,11 +14,36 @@ type Dept = models.Department
 
 type EmpDb struct {
 	// empMap map[string][]Emp
-	empMap map[string]*Dept
+	empMap map[string]*Dept //using map of key:value as deptName : empList of that dept
 }
 
 func (db *EmpDb) Initialize() {
 	db.empMap = make(map[string]*Dept)
+}
+func (db *EmpDb) AddNewDept() {
+
+	fmt.Println("enter name of the department to be added: ")
+	reader := bufio.NewReader(os.Stdin)
+	deptName, _ := reader.ReadString('\n')
+	deptName = strings.ToLower(deptName)
+	deptName = strings.TrimSpace(deptName)
+	if deptName == "" {
+		fmt.Println("department name cannot be empty!")
+		return
+	}
+
+	_, exists := db.empMap[deptName]
+	if exists {
+		fmt.Printf("department %s already exists!\n\n", deptName)
+		return
+	}
+
+	// db.empMap[deptName] = []Emp{}
+	db.empMap[deptName] = &Dept{
+		Name:      deptName,
+		Employees: []*Emp{},
+	}
+	fmt.Printf("department %s added successfully!\n\n", deptName)
 }
 
 func (db *EmpDb) AddEmpToDept() {
@@ -26,17 +52,40 @@ func (db *EmpDb) AddEmpToDept() {
 
 	fmt.Println("Enter department name: ")
 	deptName, _ := reader.ReadString('\n')
+	deptName = strings.ToLower(deptName)
 	deptName = strings.TrimSpace(deptName)
+	if deptName == "" {
+		fmt.Println("department name cannot be empty!")
+		return
+	}
 
 	dept, ok := db.empMap[deptName]
 	if !ok {
 		fmt.Printf("department %s doesn't exist!\n", deptName)
-		return
+		fmt.Println("do you want to add a new department? (0: yes, 1: no)")
+		var choice int
+		fmt.Scanln(&choice)
+		switch choice {
+		case 0:
+			db.AddNewDept()
+		case 1:
+			return
+		default:
+			fmt.Print("invalid choice!\n\n")
+		}
 	}
 
 	fmt.Print("enter employee's name: ")
 	empName, _ := reader.ReadString('\n')
+	empName = strings.ToLower(empName)
 	empName = strings.TrimSpace(empName)
+
+	invalid, _ := regexp.MatchString(`[^a-zA-Z\s]`, empName)
+
+	if invalid {
+		fmt.Println("name can't contain anything except alphabets!")
+		return
+	}
 
 	fmt.Print("enter employee's age: ")
 	var empAge uint8
@@ -59,22 +108,18 @@ func (db *EmpDb) AddEmpToDept() {
 	fmt.Println("employee added successfully!")
 }
 
-func (db *EmpDb) ShowDeptDetails() {
-	for _, dept := range db.empMap {
-		fmt.Printf("department: %s\n", dept.Name)
-		for _, emp := range dept.Employees {
-			fmt.Printf("Id: %d, Name: %s, Age: %d, Salary: %.2f\n\n", emp.Id, emp.Name, emp.Age, emp.Salary)
-		}
-	}
-}
-
 func (db *EmpDb) RemEmpFromDept() {
 
 	// var deptName string
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("enter department: ")
+	fmt.Print("enter department name: ")
 	deptName, _ := reader.ReadString('\n')
+	deptName = strings.ToLower(deptName)
 	deptName = strings.TrimSpace(deptName)
+	if deptName == "" {
+		fmt.Println("department name cannot be empty!")
+		return
+	}
 
 	var delEmpID int
 	fmt.Print("enter id of the employee who has to be deleted: ")
@@ -82,7 +127,7 @@ func (db *EmpDb) RemEmpFromDept() {
 
 	dept, ok := db.empMap[deptName]
 	if !ok {
-		fmt.Println("department not founf!\n\n")
+		fmt.Print("department not founf!\n\n")
 		fmt.Println("do you want to add a new department? (0: yes, 1: no)")
 		var choice int
 		fmt.Scanln(&choice)
@@ -92,7 +137,7 @@ func (db *EmpDb) RemEmpFromDept() {
 		case 1:
 			return
 		default:
-			fmt.Println("invalid choice!\n\n")
+			fmt.Print("invalid choice!\n\n")
 		}
 	}
 
@@ -111,7 +156,13 @@ func (db *EmpDb) CalcAvgSal() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("enter name of the department to calculate it's average salary: ")
 	deptName, _ = reader.ReadString('\n')
+	deptName = strings.ToLower(deptName)
 	deptName = strings.TrimSpace(deptName)
+
+	if deptName == "" {
+		fmt.Println("department name cannot be empty!")
+		return
+	}
 
 	dept, ok := db.empMap[deptName]
 	if !ok {
@@ -138,10 +189,14 @@ func (db *EmpDb) RaiseEmpSal() {
 	reader := bufio.NewReader(os.Stdin)
 	deptName, _ := reader.ReadString('\n')
 	deptName = strings.TrimSpace(deptName)
+	if deptName == "" {
+		fmt.Println("department name cannot be empty!")
+		return
+	}
 
 	dept, ok := db.empMap[deptName]
 	if !ok {
-		fmt.Println("enter correct department name!\n\n")
+		fmt.Print("enter correct department name!\n\n")
 		return
 	}
 
@@ -169,23 +224,11 @@ func (db *EmpDb) RaiseEmpSal() {
 
 }
 
-func (db *EmpDb) AddNewDept() {
-
-	fmt.Println("enter name of the department to be added: ")
-	reader := bufio.NewReader(os.Stdin)
-	deptName, _ := reader.ReadString('\n')
-	deptName = strings.TrimSpace(deptName)
-
-	_, exists := db.empMap[deptName]
-	if exists {
-		fmt.Printf("department %s already exists!\n\n", deptName)
-		return
+func (db *EmpDb) ShowDeptDetails() {
+	for _, dept := range db.empMap {
+		fmt.Printf("department: %s\n", dept.Name)
+		for _, emp := range dept.Employees {
+			fmt.Printf("Id: %d, Name: %s, Age: %d, Salary: %.2f\n\n", emp.Id, emp.Name, emp.Age, emp.Salary)
+		}
 	}
-
-	// db.empMap[deptName] = []Emp{}
-	db.empMap[deptName] = &Dept{
-		Name:      deptName,
-		Employees: []*Emp{},
-	}
-	fmt.Printf("department %s added successfully!\n\n", deptName)
 }

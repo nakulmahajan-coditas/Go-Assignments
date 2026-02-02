@@ -37,7 +37,7 @@ func main() {
 		case 6:
 			db.ShowDeptDetails()
 		case 7:
-			fmt.Print("exiting..\n\n")
+			fmt.Print("exiting the system..\n\n")
 			return
 		default:
 			fmt.Print("invalid choice!\n\n")
